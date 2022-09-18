@@ -10,11 +10,13 @@ using namespace CGITopaz;
 TConfig::TConfig(const QString& configFileName) :
     _configFileName(configFileName)
 {
-    if (_configFileName.isEmpty()) {
+    if (_configFileName.isEmpty())
+    {
         _errorString = "Configuration file name cannot be empty";
         return;
     }
-    if (!QFileInfo(_configFileName).exists()) {
+    if (!QFileInfo(_configFileName).exists())
+    {
         _errorString = "Configuration file not exist. File name: " + _configFileName;
         return;
     }

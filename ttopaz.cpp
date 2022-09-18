@@ -6,7 +6,7 @@
 #include <QXmlStreamReader>
 
 //My
-#include "common.h"
+#include "Common/common.h"
 
 using namespace CGITopaz;
 
@@ -28,7 +28,8 @@ TTopaz::TTopaz(CGITopaz::TConfig* cfg)
 
 TTopaz::~TTopaz()
 {
-    if (_db.isOpen()) {
+    if (_db.isOpen())
+    {
         _db.close();
     }
 }
@@ -37,11 +38,13 @@ int TTopaz::run(const QString& XMLText)
 {
     writeDebugLogFile("REQUEST>", XMLText);
 
-    if (XMLText.isEmpty()) {
+    if (XMLText.isEmpty())
+    {
         return EXIT_CODE::XML_EMPTY;
     }
 
-    if (!_db.open()) {
+    if (!_db.open())
+    {
         _errorString = "Cannot connet to DB. Error: " + _db.lastError().text();
         return EXIT_CODE::SQL_NOT_OPEN_DB;
     }
@@ -59,54 +62,69 @@ int TTopaz::run(const QString& XMLText)
     QString protocolVersion = "n/a";
     TDocsInfoList docs;
 
-    while ((!XMLReader.atEnd()) && (!XMLReader.hasError())) {
+    while ((!XMLReader.atEnd()) && (!XMLReader.hasError()))
+    {
         QXmlStreamReader::TokenType token = XMLReader.readNext();
         if (token == QXmlStreamReader::StartDocument) continue;
         else if (token == QXmlStreamReader::EndDocument) break;
-        else if (token == QXmlStreamReader::StartElement) {
+        else if (token == QXmlStreamReader::StartElement)
+        {
             //qDebug() << XMLReader.name().toString();
-            if (XMLReader.name().toString()  == "Root") {
+            if (XMLReader.name().toString()  == "Root")
+            {
                 while ((XMLReader.readNext() != QXmlStreamReader::EndElement) || XMLReader.atEnd() || XMLReader.hasError()) {
                     //qDebug() << "Root/" << XMLReader.name().toString();
-                    if (XMLReader.name().toString().isEmpty()) {
+                    if (XMLReader.name().toString().isEmpty())
+                    {
                         continue;
                     }
-                    if (XMLReader.name().toString()  == "AZSCode") {
+                    if (XMLReader.name().toString()  == "AZSCode")
+                    {
                         AZSCode = XMLReader.readElementText();
                     }
-                    else if (XMLReader.name().toString()  == "ClientVersion") {
+                    else if (XMLReader.name().toString()  == "ClientVersion")
+                    {
                         clientVersion = XMLReader.readElementText();
                     }
-                    else if (XMLReader.name().toString()  == "ProtocolVersion") {
+                    else if (XMLReader.name().toString()  == "ProtocolVersion")
+                    {
                         protocolVersion = XMLReader.readElementText();
                     }
-                    else if (XMLReader.name().toString()  == "Document") {
+                    else if (XMLReader.name().toString()  == "Document")
+                    {
                         TDocInfo doc;
                         while ((XMLReader.readNext() != QXmlStreamReader::EndElement) || XMLReader.atEnd() || XMLReader.hasError()) {
                             //qDebug() << "Root/LevelGauge/" << XMLReader.name().toString();
                             if (XMLReader.name().toString().isEmpty()) {
                                 continue;
                             }
-                            else if (XMLReader.name().toString()  == "DocumentType") {
+                            else if (XMLReader.name().toString()  == "DocumentType")
+                            {
                                 doc.type = XMLReader.readElementText();
                             }
-                            else if (XMLReader.name().toString()  == "DateTime") {
+                            else if (XMLReader.name().toString()  == "DateTime")
+                            {
                                 doc.dateTime = QDateTime::fromString(XMLReader.readElementText(), "yyyy-MM-dd hh:mm:ss.zzz");
                             }
-                            else if (XMLReader.name().toString()  == "DocumentNumber") {
+                            else if (XMLReader.name().toString()  == "DocumentNumber")
+                            {
                                 doc.number = XMLReader.readElementText().toInt();
                             }
-                            else if (XMLReader.name().toString()  == "Smena") {
+                            else if (XMLReader.name().toString()  == "Smena")
+                            {
                                 doc.smena = XMLReader.readElementText().toInt();
                             }
-                            else if (XMLReader.name().toString()  == "Creater") {
+                            else if (XMLReader.name().toString()  == "Creater")
+                            {
                                 doc.creater = XMLReader.readElementText();
                             }
-                            else if (XMLReader.name().toString()  == "Body") {
+                            else if (XMLReader.name().toString()  == "Body")
+                            {
                                 doc.Body = XMLReader.readElementText();
                             }
 
-                            else {
+                            else
+                            {
                                 _errorString = "Undefine tag in XML (LevelGauge/" + XMLReader.name().toString() + ")";
                                 textStream << _errorString; //выводим сообщение об ошибке в cin для отправки клиенту
                                 return EXIT_CODE::XML_UNDEFINE_TOCKEN;
@@ -114,7 +132,8 @@ int TTopaz::run(const QString& XMLText)
                         }
                         docs.push_back(doc);
                     }
-                    else {
+                    else
+                    {
                         _errorString = "Undefine tag in XML (Root/" + XMLReader.name().toString() + ")";
                         textStream << _errorString; //выводим сообщение об ошибке в cin для отправки клиенту
                         return EXIT_CODE::XML_UNDEFINE_TOCKEN;
@@ -122,23 +141,28 @@ int TTopaz::run(const QString& XMLText)
                 }
             }
         }
-        else {
+        else
+        {
             _errorString = "Undefine token in XML";
             textStream << _errorString; //выводим сообщение об ошибке в cin для отправки клиенту
             return EXIT_CODE::XML_UNDEFINE_TOCKEN;
         }
     }
 
-    if (XMLReader.hasError()) { //неудалось распарсить пришедшую XML
+    if (XMLReader.hasError()) //неудалось распарсить пришедшую XML
+    {
         _errorString = "Cannot parse XML query. Message: " + XMLReader.errorString();
         textStream << _errorString; //выводим сообщение об ошибке в cin для отправки клиенту
         return EXIT_CODE::XML_PARSE_ERR;
     }
 
-    if (!docs.isEmpty()) {
+    if (!docs.isEmpty())
+    {
         QString docsValues;
-        for (const auto& docItem: docs) {
-            if (!docsValues.isEmpty()) {
+        for (const auto& docItem: docs)
+        {
+            if (!docsValues.isEmpty())
+            {
                 docsValues += ", ";
             }
             docsValues += QString("'%1', CAST('%2' AS datetime2), '%3', %4, %5, '%6', '%7'").
@@ -151,13 +175,15 @@ int TTopaz::run(const QString& XMLText)
 
         writeDebugLogFile("QUERY>", queryText);
 
-        if (!query.exec(queryText)) {
+        if (!query.exec(queryText))
+        {
             _db.rollback();
             _errorString = "Cannot execute query. Error: " + query.lastError().text() + " Query: " + queryText;
             return EXIT_CODE::SQL_EXECUTE_QUERY_ERR;
         }
 
-        if (!_db.commit()) {
+        if (!_db.commit())
+        {
             _db.rollback();
             _errorString = "Cannot commit transaction. Error: " + _db.lastError().text();
             return EXIT_CODE::SQL_COMMIT_ERR;

@@ -8,7 +8,8 @@
 
 #include "tconfig.h"
 
-namespace CGITopaz {
+namespace CGITopaz
+{
 
 class TTopaz
 {
@@ -21,7 +22,8 @@ public:
     QString errorString() const { return _errorString; }
 
 private:
-    typedef struct {
+    typedef struct
+    {
         QString Body;
         int number;
         int smena;

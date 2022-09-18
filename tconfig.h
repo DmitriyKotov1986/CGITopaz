@@ -14,7 +14,8 @@ public:
     {
         static TConfig* _config = nullptr;
 
-        if (_config == nullptr){
+        if (_config == nullptr)
+        {
             _config = new TConfig(configFileName);
         }
 
