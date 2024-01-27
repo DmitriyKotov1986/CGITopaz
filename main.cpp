@@ -8,8 +8,11 @@
 #include "tconfig.h"
 #include "ttopaz.h"
 
-using namespace CGITopaz;
+#define _GLIBCXX_DEBUG_PEDANTIC
+#define _DEBUG
+#define _GLIBCXX_DEBUG
 
+using namespace CGITopaz;
 using namespace Common;
 
 int main(int argc, char *argv[])

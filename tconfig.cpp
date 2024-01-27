@@ -27,6 +27,7 @@ TConfig::TConfig(const QString& configFileName) :
 
     //Database
     ini.beginGroup("DATABASE");
+
     _db_Driver = ini.value("Driver", "QODBC").toString();
     _db_DBName = ini.value("DataBase", "SystemMonitorDB").toString();
     _db_UserName = ini.value("UID", "").toString();
@@ -34,6 +35,7 @@ TConfig::TConfig(const QString& configFileName) :
     _db_ConnectOptions = ini.value("ConnectionOprions", "").toString();
     _db_Port = ini.value("Port", "").toUInt();
     _db_Host = ini.value("Host", "localhost").toString();
+
     ini.endGroup();
 }
 
